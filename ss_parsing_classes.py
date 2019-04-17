@@ -22,36 +22,18 @@ class CommandFormatter(object):
   def format_individual_command(to_submit):
     return """
       INSERT INTO {tbl}(
-        party_fixedref,
-        profile_id,
-        identity_id,
-        alias_fixedref,
-        name_id,
-        first,
-        middle,
-        last,
-        nickname,
-        maiden,
-        patronymic,
-        matronymic,
-        full_name,
-        full_name_sorted
+        party_fixedref, profile_id,       identity_id,
+        alias_fixedref, name_id,          first,
+        middle,         last,             nickname,
+        maiden,         patronymic,       matronymic,
+        full_name,      full_name_sorted
       )
       VALUES(
-        "{party_fixedref}",
-        "{profile_id}",
-        "{identity_id}",
-        "{alias_fixedref}",
-        "{name_id}",
-        "{first}",
-        "{middle}",
-        "{last}",
-        "{nickname}",
-        "{maiden}",
-        "{patronymic}",
-        "{matronymic}",
-        "{full_name}",
-        "{full_name_sorted}"
+        "{party_fixedref}", "{profile_id}",       "{identity_id}",
+        "{alias_fixedref}", "{name_id}",          "{first}",
+        "{middle}",         "{last}",             "{nickname}",
+        "{maiden}",         "{patronymic}",       "{matronymic}",
+        "{full_name}",      "{full_name_sorted}"
       );
     """.format(tbl=to_submit['tbl'],
                party_fixedref=to_submit['fixedref'],
@@ -69,6 +51,72 @@ class CommandFormatter(object):
                full_name=to_submit['full_name'],
                full_name_sorted=to_submit['full_name_sorted'])
 
+  @staticmethod
+  def format_entity_command(to_submit):
+    return """
+      INSERT INTO {tbl}(
+        party_fixedref,     profile_id, identity_id,
+        alias_fixedref,     name_id,    entity_name,
+        entity_name_sorted
+      )
+      VALUES(
+        "{party_fixedref}",    "{profile_id}", "{identity_id}",
+        "{alias_fixedref}",    "{name_id}",    "{entity_name}",
+        "{entity_name_sorted}"
+      );
+    """.format(tbl=to_submit['tbl'],
+               party_fixedref=to_submit['fixedref'],
+               profile_id=to_submit['profile_id'],
+               identity_id=to_submit['identity_id'],
+               alias_fixedref=to_submit['AliasFixedRef'],
+               name_id=to_submit['DocumentedNameID'],
+               entity_name=to_submit['Entity Name'],
+               entity_name_sorted=to_submit['entity_name_sorted'])
+
+  @staticmethod
+  def format_vessel_command(to_submit):
+    return """
+      INSERT INTO {tbl}(
+        party_fixedref,     profile_id, idvessel_id,
+        alias_fixedref,     name_id,    vessel_name,
+        vessel_name_sorted
+      )
+      VALUES(
+        "{party_fixedref}",    "{profile_id}", "{idvessel_id}",
+        "{alias_fixedref}",    "{name_id}",    "{vessel_name}",
+        "{vessel_name_sorted}"
+      );
+    """.format(tbl=to_submit['tbl'],
+               party_fixedref=to_submit['fixedref'],
+               profile_id=to_submit['profile_id'],
+               idvessel_id=to_submit['idvessel_id'],
+               alias_fixedref=to_submit['AliasFixedRef'],
+               name_id=to_submit['DocumentedNameID'],
+               vessel_name=to_submit['Entity Name'],
+               vessel_name_sorted=to_submit['vessel_name_sorted'])
+
+  @staticmethod
+  def format_aircraft_command(to_submit):
+    return """
+      INSERT INTO {tbl}(
+        party_fixedref,     profile_id, idaircraft_id,
+        alias_fixedref,     name_id,    aircraft_name,
+        aircraft_name_sorted
+      )
+      VALUES(
+        "{party_fixedref}",    "{profile_id}", "{idaircraft_id}",
+        "{alias_fixedref}",    "{name_id}",    "{aircraft_name}",
+        "{aircraft_name_sorted}"
+      );
+    """.format(tbl=to_submit['tbl'],
+               party_fixedref=to_submit['fixedref'],
+               profile_id=to_submit['profile_id'],
+               idaircraft_id=to_submit['idaircraft_id'],
+               alias_fixedref=to_submit['AliasFixedRef'],
+               name_id=to_submit['DocumentedNameID'],
+               aircraft_name=to_submit['Entity Name'],
+               aircraft_name_sorted=to_submit['aircraft_name_sorted'])
+    
 
 class DistinctParty(object):
 

@@ -6,3 +6,5 @@ This is a little tool I am building to screen individuals, entities, vessels, an
 For more information on those two lists, see here:
 https://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx
 https://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/consolidated.aspx
+
+This project is a work-in-progress.

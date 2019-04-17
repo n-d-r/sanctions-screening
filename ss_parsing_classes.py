@@ -77,46 +77,46 @@ class CommandFormatter(object):
   def format_vessel_command(to_submit):
     return """
       INSERT INTO {tbl}(
-        party_fixedref,     profile_id, idvessel_id,
+        party_fixedref,     profile_id, identity_id,
         alias_fixedref,     name_id,    vessel_name,
         vessel_name_sorted
       )
       VALUES(
-        "{party_fixedref}",    "{profile_id}", "{idvessel_id}",
+        "{party_fixedref}",    "{profile_id}", "{identity_id}",
         "{alias_fixedref}",    "{name_id}",    "{vessel_name}",
         "{vessel_name_sorted}"
       );
     """.format(tbl=to_submit['tbl'],
                party_fixedref=to_submit['fixedref'],
                profile_id=to_submit['profile_id'],
-               idvessel_id=to_submit['idvessel_id'],
+               identity_id=to_submit['identity_id'],
                alias_fixedref=to_submit['AliasFixedRef'],
                name_id=to_submit['DocumentedNameID'],
-               vessel_name=to_submit['Entity Name'],
+               vessel_name=to_submit['Vessel Name'],
                vessel_name_sorted=to_submit['vessel_name_sorted'])
 
   @staticmethod
   def format_aircraft_command(to_submit):
     return """
       INSERT INTO {tbl}(
-        party_fixedref,     profile_id, idaircraft_id,
+        party_fixedref,     profile_id, identity_id,
         alias_fixedref,     name_id,    aircraft_name,
         aircraft_name_sorted
       )
       VALUES(
-        "{party_fixedref}",    "{profile_id}", "{idaircraft_id}",
+        "{party_fixedref}",    "{profile_id}", "{identity_id}",
         "{alias_fixedref}",    "{name_id}",    "{aircraft_name}",
         "{aircraft_name_sorted}"
       );
     """.format(tbl=to_submit['tbl'],
                party_fixedref=to_submit['fixedref'],
                profile_id=to_submit['profile_id'],
-               idaircraft_id=to_submit['idaircraft_id'],
+               identity_id=to_submit['identity_id'],
                alias_fixedref=to_submit['AliasFixedRef'],
                name_id=to_submit['DocumentedNameID'],
-               aircraft_name=to_submit['Entity Name'],
+               aircraft_name=to_submit['Aircraft Name'],
                aircraft_name_sorted=to_submit['aircraft_name_sorted'])
-    
+
 
 class DistinctParty(object):
 
@@ -191,9 +191,9 @@ class DistinctParty(object):
     self._determine_party_type()
 
   def _commit_individual(self, db, tbl):
-    to_submit = {}
     commands = []
     for name in self.names:
+      to_submit = {}
       for name_part in [
         'First Name', 'Middle Name', 'Last Name', 'Nickname',
         'Maiden Name', 'Patronymic', 'Matronymic'
@@ -230,13 +230,67 @@ class DistinctParty(object):
     connection.close()
 
   def _commit_entity(self, db, tbl):
-    pass
+    commands = []
+    for name in self.names:
+      to_submit = {'fixedref': self.fixedref}
+      to_submit['profile_id'] = self.profile_id
+      to_submit['identity_id'] = self.identity_id
+      to_submit['AliasFixedRef'] = name['AliasFixedRef']
+      to_submit['DocumentedNameID'] = name['DocumentedNameID']
+      to_submit['Entity Name'] = name['Entity Name']
+      to_submit['entity_name_sorted'] = ' '.join(
+        sorted([n.lower() for n in name['Entity Name'].split(' ')])
+      ).strip()
+      to_submit['tbl'] = tbl      
+      commands.append(CommandFormatter.format_entity_command(to_submit))
+    connection = sqlite3.connect(db)
+    cursor = connection.cursor()
+    for command in commands:
+      cursor.execute(command)
+    connection.commit()
+    connection.close()
 
   def _commit_vessel(self, db, tbl):
-    pass
+    commands = []
+    for name in self.names:
+      to_submit = {'fixedref': self.fixedref}
+      to_submit['profile_id'] = self.profile_id
+      to_submit['identity_id'] = self.identity_id
+      to_submit['AliasFixedRef'] = name['AliasFixedRef']
+      to_submit['DocumentedNameID'] = name['DocumentedNameID']
+      to_submit['Vessel Name'] = name['Vessel Name']
+      to_submit['vessel_name_sorted'] = ' '.join(
+        sorted([n.lower() for n in name['Vessel Name'].split(' ')])
+      ).strip()
+      to_submit['tbl'] = tbl
+      commands.append(CommandFormatter.format_vessel_command(to_submit))
+    connection = sqlite3.connect(db)
+    cursor = connection.cursor()
+    for command in commands:
+      cursor.execute(command)
+    connection.commit()
+    connection.close()
 
   def _commit_aircraft(self, db, tbl):
-    pass
+    commands = []
+    for name in self.names:
+      to_submit = {'fixedref': self.fixedref}
+      to_submit['profile_id'] = self.profile_id
+      to_submit['identity_id'] = self.identity_id
+      to_submit['AliasFixedRef'] = name['AliasFixedRef']
+      to_submit['DocumentedNameID'] = name['DocumentedNameID']
+      to_submit['Aircraft Name'] = name['Aircraft Name']
+      to_submit['aircraft_name_sorted'] = ' '.join(
+        sorted([n.lower() for n in name['Aircraft Name'].split(' ')])
+      ).strip()
+      to_submit['tbl'] = tbl      
+      commands.append(CommandFormatter.format_aircraft_command(to_submit))
+    connection = sqlite3.connect(db)
+    cursor = connection.cursor()
+    for command in commands:
+      cursor.execute(command)
+    connection.commit()
+    connection.close()
 
   def commit(self, db=DB_NAME, 
              tbl_individuals=DB_TABLE_INDIVIDUALS,

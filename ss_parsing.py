@@ -143,6 +143,12 @@ if __name__ == '__main__':
       distinct_party.commit()
       elem.clear()
 
+    elif elem.tag==ns('Feature'):
+      ftr = Feature(elem.attrib['ID'])
+      ftr.process_element(elem)
+      ftr.commit()
+      elem.clear()
+
     elif elem.tag.split('}')[-1] in TAGS_TO_IGNORE:
       elem.clear()
 

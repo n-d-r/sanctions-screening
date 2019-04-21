@@ -167,6 +167,13 @@ class DistinctParty(object):
     else:
       self.party_type = 'Individual'
 
+  def _process_features(self, to_process):
+    features = []
+    for elem in to_process:
+      feature = Feature()
+      feature.process(elem)
+      features.append(feature)
+
   def process_element(self, elem):
     profile = elem.findall(ns('Profile'))
     # should always be one profile per distinct party, as per specification
@@ -189,6 +196,10 @@ class DistinctParty(object):
     self._process_name_part_groups(identity[0])
     self._process_aliases(identity[0])
     self._determine_party_type()
+
+    features = profile.findall(ns('Feature'))
+    if features:
+      self._process_features(features)
 
   def _commit_individual(self, db, tbl):
     commands = []
@@ -305,6 +316,70 @@ class DistinctParty(object):
       self._commit_vessel(db, tbl_vessels)
     elif self.party_type == 'Aircraft':
       self._commit_aircraft(db, tbl_aircraft)
+
+
+class Feature(object):
+
+  def __init__(self, party_fixedref):
+    self.party_fixedref  = party_fixedref
+    self.detail_type_id  = ''
+    self.location_id     = ''
+    self.start_date_from = ''
+    self.start_date_to   = ''
+    self.end_date_from   = ''
+    self.end_date_to     = ''
+ 
+  def _process_date(self, date):
+    year = date.find(ns('Year')).text
+    month = date.find(ns('Month')).text
+    day = date.find(ns('Day')).text
+    if len(month) == 1:
+      month = '0' + month
+    if len(day) == 1:
+      day = '0' + day
+    return '{year}-{month}-{day}'.format(year=year, month=month, day=day)
+
+  def _process_range(self, rng):
+    range_from = rng.find(ns('From'))
+    range_from = self._process_date(range_from)
+    range_to = rng.find(ns('To'))
+    range_to = self._process_date(range_to)
+    return (range_from, range_to)
+
+  def _process_date_period(self, dateperiod):
+    start = dateperiod.find(ns('Start'))
+    start_date_from, start_date_to = self._process_range(start)
+    self.start_date_from = start_date_from
+    self.start_date_to = start_date_to
+
+    end = DatePeriod.find(ns('End'))
+    end_date_from, end_date_to = self._process_range(end)
+    self.end_date_from = end_date_from
+    self.end_date_to = end_date_to
+
+  def _process_feature_version(self, ftr_version):
+    for child in ftr_version.getchildren():
+      tag = child.tag.split('}')[-1]
+      if tag == 'DatePeriod':
+        self._process_date_period(child)
+      elif tag == 'VersionDetail':
+        self.detail_type_id = child.attrib['DetailTypeID']
+      elif tag == 'VersionLocation':
+        self.location_id = child.attrib['LocationID']
+      else:
+        pass
+
+  def process_element(self, elem):
+    # there should always only be one FeatureVersion per Feature
+    ftr_version = elem.find(ns('FeatureVersion'))
+    self._process_feature_version(ftr_version[0])
+
+    # there should also always only be one IdentityReference per Feature
+    identity_ref = elem.find(ns('IdentityReference'))
+    self.identity_ref = identity_ref.attrib['IdentityID']
+
+  def commit(self):
+    pass
 
 
 class Location(object):

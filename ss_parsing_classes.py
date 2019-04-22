@@ -5,9 +5,11 @@
 import re
 import sqlite3
 
-from ss_variables import area_codes, countries, name_part_types
+from ss_variables import area_codes, countries, name_part_types, detail_types
 from ss_functions import ns
-from ss_constants import DB_NAME, DB_TABLE_INDIVIDUALS, DB_TABLE_ENTITIES, DB_TABLE_VESSELS, DB_TABLE_AIRCRAFT
+from ss_constants import (DB_NAME, DB_TABLE_INDIVIDUALS, DB_TABLE_ENTITIES, 
+                          DB_TABLE_VESSELS, DB_TABLE_AIRCRAFT, DB_TABLE_FEATURES,
+                          DB_TABLE_FEATURES_TO_PARTIES)
 
 #===============================================================================
 # Classes
@@ -397,8 +399,20 @@ class Feature(object):
     identity_ref = elem.find(ns('IdentityReference'))
     self.identity_ref = identity_ref.attrib['IdentityID']
 
-  def commit(self):
-    pass
+  def commit(self, db=DB_NAME, tbl_feaures=DB_TABLE_FEATURES,
+             tbl_features_to_parties=DB_TABLE_FEATURES_TO_PARTIES):
+    to_submit = vars(self)
+    to_submit['tbl'] = tbl_feaures
+    commands = [
+      CommandFormatter.format_feature_command(to_submit),
+      CommandFormatter.format_feature_to_parties_command(to_submit)
+    ]
+    connection = sqlite3.connect(db)
+    cursor = connection.cursor()
+    for command in commands:
+      cursor.execute(command)
+    connection.commit()
+    connection.close()
 
 
 class Location(object):

@@ -146,7 +146,8 @@ class CommandFormatter(object):
     return """
       INSERT INTO {tbl}(identity_ref, feature_id)
       VALUES("{identity_ref}", "{feature_id}");
-    """.format(identity_ref=to_submit['identity_ref'],
+    """.format(tbl=to_submit['tbl_ftp'],
+               identity_ref=to_submit['identity_ref'],
                feature_id=to_submit['feature_id'])
 
 
@@ -403,6 +404,7 @@ class Feature(object):
              tbl_features_to_parties=DB_TABLE_FEATURES_TO_PARTIES):
     to_submit = vars(self)
     to_submit['tbl'] = tbl_feaures
+    to_submit['tbl_ftp'] = tbl_features_to_parties
     commands = [
       CommandFormatter.format_feature_command(to_submit),
       CommandFormatter.format_feature_to_parties_command(to_submit)

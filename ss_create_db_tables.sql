@@ -2,6 +2,8 @@ DROP TABLE IF EXISTS individuals;
 DROP TABLE IF EXISTS entities;
 DROP TABLE IF EXISTS vessels;
 DROP TABLE IF EXISTS aircraft;
+DROP TABLE IF EXISTS features;
+DROP TABLE IF EXISTS features_to_parties;
 
 CREATE TABLE individuals(
   party_fixedref   TEXT,

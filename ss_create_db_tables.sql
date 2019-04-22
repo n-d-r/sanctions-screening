@@ -53,3 +53,20 @@ CREATE TABLE aircraft(
   aircraft_name_sorted TEXT,
   PRIMARY KEY(party_fixedref, profile_id, identity_id, alias_fixedref, name_id)  
 );
+
+CREATE TABLE features_to_parties(
+  identity_ref TEXT,
+  feature_id   TEXT,
+  PRIMARY KEY(identity_ref, feature_id)
+);
+
+CREATE TABLE features(
+  feature_id      TEXT,
+  detail_type     TEXT,
+  location_id     TEXT,
+  start_date_from TEXT,
+  start_date_to   TEXT,
+  end_date_from   TEXT,
+  end_date_to     TEXT,
+  PRIMARY KEY(feature_id)
+);

@@ -416,6 +416,11 @@ class Feature(object):
     connection.commit()
     connection.close()
 
+    # to do: don't open and close DB for every commit, instead open it
+    # before starting to commit data, then close afterwards (i.e. move
+    # opening, committing, and closing out of the Feature and DistinctParty
+    # classes)
+
 
 class Location(object):
 

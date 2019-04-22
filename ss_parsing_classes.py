@@ -167,13 +167,6 @@ class DistinctParty(object):
     else:
       self.party_type = 'Individual'
 
-  def _process_features(self, to_process):
-    features = []
-    for elem in to_process:
-      feature = Feature()
-      feature.process(elem)
-      features.append(feature)
-
   def process_element(self, elem):
     profile = elem.findall(ns('Profile'))
     # should always be one profile per distinct party, as per specification
@@ -196,10 +189,6 @@ class DistinctParty(object):
     self._process_name_part_groups(identity[0])
     self._process_aliases(identity[0])
     self._determine_party_type()
-
-    features = profile.findall(ns('Feature'))
-    if features:
-      self._process_features(features)
 
   def _commit_individual(self, db, tbl):
     commands = []
@@ -320,9 +309,9 @@ class DistinctParty(object):
 
 class Feature(object):
 
-  def __init__(self, party_fixedref):
-    self.party_fixedref  = party_fixedref
-    self.detail_type_id  = ''
+  def __init__(self, feature_id):
+    self.feature_id      = feature_id
+    self.detail_type     = ''
     self.location_id     = ''
     self.start_date_from = ''
     self.start_date_to   = ''
@@ -352,18 +341,18 @@ class Feature(object):
     self.start_date_from = start_date_from
     self.start_date_to = start_date_to
 
-    end = DatePeriod.find(ns('End'))
+    end = dateperiod.find(ns('End'))
     end_date_from, end_date_to = self._process_range(end)
     self.end_date_from = end_date_from
     self.end_date_to = end_date_to
 
-  def _process_feature_version(self, ftr_version):
+  def _process_feature_version(self, ftr_version, detail_type_id_lookup=detail_types):
     for child in ftr_version.getchildren():
       tag = child.tag.split('}')[-1]
       if tag == 'DatePeriod':
         self._process_date_period(child)
       elif tag == 'VersionDetail':
-        self.detail_type_id = child.attrib['DetailTypeID']
+        self.detail_type = detail_type_id_lookup[child.attrib['DetailTypeID']]
       elif tag == 'VersionLocation':
         self.location_id = child.attrib['LocationID']
       else:

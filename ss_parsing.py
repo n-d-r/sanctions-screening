@@ -7,7 +7,7 @@ import xml.etree.cElementTree as cET
 from ss_variables import *
 from ss_constants import *
 from ss_functions import *
-from ss_parsing_classes import DistinctParty, Location, CommandFormatter
+from ss_parsing_classes import DistinctParty, Location, Feature, CommandFormatter
 
 #===============================================================================
 # Parsing lists - Specially Designated Nationals List (SDN List)

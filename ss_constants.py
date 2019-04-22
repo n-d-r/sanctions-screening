@@ -7,6 +7,8 @@ DB_TABLE_INDIVIDUALS = 'individuals'
 DB_TABLE_ENTITIES = 'entities'
 DB_TABLE_VESSELS = 'vessels'
 DB_TABLE_AIRCRAFT = 'aircraft'
+DB_TABLE_FEATURES = 'features'
+DB_TABLE_FEATURES_TO_PARTIES = 'features_to_parties'
 XMLNS = 'http://www.un.org/sanctions/1.0'
 TAGS_TO_IGNORE = [
   'Sanctions',

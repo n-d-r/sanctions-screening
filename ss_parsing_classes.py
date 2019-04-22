@@ -117,6 +117,36 @@ class CommandFormatter(object):
                aircraft_name=to_submit['Aircraft Name'],
                aircraft_name_sorted=to_submit['aircraft_name_sorted'])
 
+  @staticmethod
+  def format_feature_command(to_submit):
+    return """
+      INSERT INTO {tbl}(
+        feature_id,      detail_type,   location_id,
+        start_date_from, start_date_to, end_date_from,
+        end_date_to
+      )
+      VALUES(
+        "{feature_id}",      "{detail_type}",   "{location_id}",
+        "{start_date_from}", "{start_date_to}", "{end_date_from}",
+        "{end_date_to}"
+      );
+    """.format(tbl=to_submit['tbl'],
+               feature_id=to_submit['feature_id'],
+               detail_type=to_submit['detail_type'],
+               location_id=to_submit['location_id'],
+               start_date_from=to_submit['start_date_from'],
+               start_date_to=to_submit['start_date_to'],
+               end_date_from=to_submit['end_date_from'],
+               end_date_to=to_submit['end_date_to'])
+
+  @staticmethod
+  def format_feature_to_parties_command(to_submit):
+    return """
+      INSERT INTO {tbl}(identity_ref, feature_id)
+      VALUES("{identity_ref}", "{feature_id}");
+    """.format(identity_ref=to_submit['identity_ref'],
+               feature_id=to_submit['feature_id'])
+
 
 class DistinctParty(object):
 
